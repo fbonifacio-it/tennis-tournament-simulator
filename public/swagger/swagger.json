@@ -1,0 +1,181 @@
+
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Tournament API",
+    "version": "1.0.0",
+    "description": "API for tennis tournaments simulator."
+  },
+  "servers": [
+    {
+      "url": "http://local.tennis-tournament-simulator.com",
+      "description": "Local server"
+    }
+  ],
+  "components": {
+  "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/register": {
+      "post": {
+        "summary": "register as a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "registered as a new user successfully" },
+          "400": { "description": "Invalid input data" }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "summary": "login to get the bearer token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "logged in, please use the bearer token provided" },
+          "400": { "description": "Invalid input data" }
+        }
+      }
+    },
+    "/logout": {
+      "post": {
+        "summary": "user logout",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": { "description": "you have been logged out" },
+          "400": { "description": "something went wrong. please try again later" }
+        }
+      }
+    },
+    "/tournament": {
+      "post": {
+        "summary": "Simulate a new tournament",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "players": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": { "type": "string" },
+                        "skillLevel": { "type": "integer" },
+                        "gender": { "type": "string", "enum": ["M", "F"] },
+                        "strength": { "type": "integer" },
+                        "speed": { "type": "integer" },
+                        "reactionTime": { "type": "integer" }
+                      },
+                      "required": ["name", "skillLevel", "gender"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Tournament simulated successfully" },
+          "400": { "description": "Invalid input data" }
+        }
+      }
+    },
+    "/tournament/history": {
+      "get": {
+        "summary": "Get tournament history",
+        "responses": {
+          "200": { "description": "all tournaments fetched successfully" },
+          "400": { "description": "something went wrong. please try again later" }
+        }
+      }
+    },
+    "/tournament/{id}": {
+      "get": {
+        "summary": "Get tournament by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Tournament found successfully" },
+          "400": { "description": "Invalid ID" }
+        }
+      }
+    },
+    "/tournament/search": {
+      "post": {
+        "summary": "Get tournaments by filters",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "date": { "type": "string", "format": "date" },
+                  "gender": { "type": "string", "enum": ["M", "F"] },
+                  "winnerId": { "type": "integer" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Search was performed successfully" },
+          "400": { "description": "invalid or missing filters" }
+        }
+      }
+    }
+  }
+}
